@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<npcs>
+	<npc centerx="5687" centery="6162" centerz="5" radius="1">
+		<npc name="Mortis" x="0" y="0" z="5" spawntime="60" />
+	</npc>
+	<npc centerx="5681" centery="6326" centerz="5" radius="1">
+		<npc name="Mortis" x="0" y="0" z="5" spawntime="60" />
+	</npc>
+	<npc centerx="5648" centery="6208" centerz="7" radius="1">
+		<npc name="Gederas" x="0" y="0" z="7" spawntime="60" />
+	</npc>
+	<npc centerx="5657" centery="6212" centerz="7" radius="1">
+		<npc name="Sandomo" x="0" y="0" z="7" spawntime="60" />
+	</npc>
+	<npc centerx="5642" centery="6372" centerz="7" radius="1">
+		<npc name="Gederas" x="0" y="0" z="7" spawntime="60" />
+	</npc>
+	<npc centerx="5651" centery="6376" centerz="7" radius="1">
+		<npc name="Sandomo" x="0" y="0" z="7" spawntime="60" />
+	</npc>
+</npcs>
