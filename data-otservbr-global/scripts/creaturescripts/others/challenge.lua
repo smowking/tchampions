@@ -84,48 +84,157 @@ end
 
 local ChallengeDeath = CreatureEvent("ChallengeDeath")
 function ChallengeDeath.onPrepareDeath(creature, lastHitKiller, mostDamageKiller)
-	
-	local useItem = NewChallengeConfig[creature:getStorageValue(ChallangeStorages.duelAreaUid)]
-	if not useItem then
-		return true
-	end
 
 	if (creature:getStorageValue(ChallangeStorages.inChallenge) == -1) then
 		return true
 	end
 
-	local playersTable = getPlayersInChallenge(creature:getStorageValue(ChallangeStorages.duelAreaUid), creature:getStorageValue(ChallangeStorages.duelSubAreaUid))
-
-	if #playersTable == 1 then
-		for _, p in pairs(playersTable) do
-			local nPlayer = Player(p)
-
-			if (nPlayer:getStorageValue(ChallangeStorages.inChallenge) >= 0) then
-				nPlayer:setStorageValue(ChallangeStorages.inChallenge, -1)
-			end
-
-			teleportToPodium(nPlayer:getId(), 1, useItem)
-		end
-	elseif #playersTable == 2 then
-		for _, p in pairs(playersTable) do
-			local nPlayer = Player(p)
-			if (nPlayer:getName() == creature:getName()) then
-				teleportToPodium(nPlayer:getId(), 2, useItem)
-			else
-				teleportToPodium(nPlayer:getId(), 1, useItem)
-			end
-		end
-	elseif #playersTable >= 3 then
-		for _, p in pairs(playersTable) do
-			local nPlayer = Player(p)
-			if (nPlayer:getName() ~= creature:getName()) then
-				nPlayer:sendTextMessage(MESSAGE_STATUS_WARNING, "The player " .. creature:getName() .. " was eliminated.")
-			end
-		end
-
-		teleportToPodium(creature:getId(), 4, useItem)
+	local useItem = NewChallengeConfig[creature:getStorageValue(ChallangeStorages.duelAreaUid)]
+	if not useItem then
+		return true
 	end
 
-	return true
+	local playersTable = getPlayersInChallenge(creature:getStorageValue(ChallangeStorages.duelAreaUid), creature:getStorageValue(ChallangeStorages.duelSubAreaUid))
+		if #playersTable == 1 then
+			for _, p in pairs(playersTable) do
+				local nPlayer = Player(p)
+
+				if (nPlayer:getStorageValue(ChallangeStorages.inChallenge) >= 0) then
+					nPlayer:setStorageValue(ChallangeStorages.inChallenge, -1)
+				end
+
+				teleportToPodium(nPlayer:getId(), 1, useItem)
+			end
+		elseif #playersTable == 2 then
+			for _, p in pairs(playersTable) do
+				local nPlayer = Player(p)
+
+				if nPlayer:getStorageValue(ChallangeStorages.inChampionship) == -1 then
+					if (nPlayer:getName() == creature:getName()) then
+						teleportToPodium(nPlayer:getId(), 2, useItem)
+					else
+						teleportToPodium(nPlayer:getId(), 1, useItem)
+					end
+				else
+					if (nPlayer:getName() == creature:getName()) then
+						creature:setStorageValue(ChallangeStorages.champioshipLoss, creature:getStorageValue(ChallangeStorages.champioshipLoss) + 1)
+						creature:sendTextMessage(MESSAGE_STATUS_WARNING, "Oh no! You loss in this map.")
+					else
+						nPlayer:setStorageValue(ChallangeStorages.champioshipWins, nPlayer:getStorageValue(ChallangeStorages.champioshipWins) + 1)
+						nPlayer:sendTextMessage(MESSAGE_STATUS_WARNING, "Congratulations! You won this map!")
+					end
+
+					nPlayer:addHealth(nPlayer:getMaxHealth())
+					local lobbyPos = Position(6187,5992,7)
+					nPlayer:teleportTo(lobbyPos)
+				end
+			end
+
+			if creature:getStorageValue(ChallangeStorages.inChampionship) > -1 then
+
+				local mapGroup = creature:getStorageValue(ChallangeStorages.championshipMapGroup)
+				local nextMap = creature:getStorageValue(ChallangeStorages.lastChampionshipMap) + 1
+				local champPlayers = getLobbyPlayersByPlayerName(creature:getName()):split(";")
+				
+				if #ChampionshipConfig.AvaliableMaps[mapGroup] >= nextMap then
+					addEvent(
+						startChampionship,
+						10*1000, 
+						creature:getId(),
+						creature:getStorageValue(ChallangeStorages.lastChampionshipMap) + 1
+					)
+	
+					for i = 1, #champPlayers do
+						local creatures = Player(champPlayers[i])
+						for f = 1, 10 do
+							addEvent(
+								WarnTimeChampionship,
+								(10000 - ((10-f)*990)), creatures:getId(), (10-f)
+							)
+						end
+					end
+				else
+					local tableParticipants = {}
+
+					if creature:getStorageValue(ChallangeStorages.inChampionship) > -1 then
+						for i = 1, #champPlayers do
+							local creatures = Player(champPlayers[i])
+
+							table.insert(tableParticipants, {
+								name = creatures:getName(),
+								wins = creatures:getStorageValue(ChallangeStorages.champioshipWins),
+								loses = creatures:getStorageValue(ChallangeStorages.champioshipLoss)
+							})
+
+							creatures:setStorageValue(ChallangeStorages.inChampionship, -1)
+							creatures:setStorageValue(ChallangeStorages.championshipMapGroup, -1)
+							creatures:setStorageValue(ChallangeStorages.lastChampionshipMap, -1)
+
+							local leavePos = Position(6187,5982,7)
+							creatures:teleportTo(leavePos)
+						end
+
+						table.sort(tableParticipants, function(a, b) return a.wins > b.wins end)
+
+						local pWinner = nil
+						local winnerWins = 0
+						local draw = false
+						local empatados= {}
+
+						for i = 1, #tableParticipants do
+							local creatures = Player(tableParticipants[i].name)
+							if creatures:getStorageValue(ChallangeStorages.champioshipWins) > winnerWins then
+								winnerWins = creatures:getStorageValue(ChallangeStorages.champioshipWins)
+								pWinner = creatures
+							elseif creatures:getStorageValue(ChallangeStorages.champioshipWins) == winnerWins then
+								table.insert(empatados, creatures:getName())
+
+								if not empatados[pWinner:getName()] then
+									table.insert(empatados, pWinner:getName())
+								end
+
+								draw = true
+							end
+						end
+						
+						for i = 1, #champPlayers do
+							local creatures = Player(champPlayers[i])
+							if draw then
+								creatures:sendTextMessage(MESSAGE_STATUS_WARNING, "A partida terminou empatada entre ".. table.concat(empatados," and ") .. " e a recompensa foi divida entre os empatados.")
+							else
+								creatures:sendTextMessage(MESSAGE_STATUS_WARNING, "O campeonato terminou e o vencedor foi ".. pWinner:getName())
+							end
+
+						end
+					end
+					--Acabou o champs
+				end
+			end
+
+		return false
+		elseif #playersTable >= 3 then
+			for _, p in pairs(playersTable) do
+				local nPlayer = Player(p)
+
+				if (nPlayer:getName() ~= creature:getName()) then
+					nPlayer:sendTextMessage(MESSAGE_STATUS_WARNING, "The player " .. creature:getName() .. " was eliminated.")
+				else
+					if nPlayer:getStorageValue(ChallangeStorages.inChampionship) > -1 then
+						nPlayer:setStorageValue(ChallangeStorages.champioshipLoss, creature:getStorageValue(ChallangeStorages.champioshipLoss) + 1)
+						nPlayer:sendTextMessage(MESSAGE_STATUS_WARNING, "Oh no! You loss in this map, now you have to wait for the others.")
+						
+						local lobbyPos = Position(6187,5992,7)
+						nPlayer:teleportTo(lobbyPos)
+					else
+						teleportToPodium(creature:getId(), #playersTable, useItem)
+					end
+					nPlayer:addHealth(nPlayer:getMaxHealth())
+				end
+			end
+			return false
+		end
+
+		return true
+
 end
 ChallengeDeath:register()

@@ -232,6 +232,13 @@ function playerLogin.onLogin(player)
 		onExerciseTraining[player:getId()] = nil
 		player:setTraining(false)
 	end
+
+	if (player:getStorageValue(ChallangeStorages.inChallenge) >= 0) then
+		player:setStorageValue(ChallangeStorages.inChallenge, -1)
+		local leavePos = Position(6187,5982,7)
+		player:teleportTo(leavePos)
+	end
+
 	return true
 end
 playerLogin:register()

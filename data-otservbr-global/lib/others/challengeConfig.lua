@@ -1,3 +1,11 @@
+ChampionshipConfig = {
+	AvaliableMaps = {
+		[0] = {[0] = 12002, [1] = 12003, [2] = 12004 },
+		[1] = {[0] = 12002, [1] = 12003, [2] = 12004 },
+		[2] = {[0] = 12002, [1] = 12003, [2] = 12004 }
+	}
+}
+
 NewChallengeConfig = {
 	--Frodo
 	[12001] = {
@@ -484,12 +492,12 @@ NewChallengeConfig = {
 					{id = 3180, amount = 200, container = 2871}, -- MW
 					{id = 3053, amount = 350, container = 2870}, -- Time Ring
 					{id = 3725, amount = 100}, -- brown mushroom
-					{id = 3192, amount = 100}, -- Fire Bomb
-					{id = 3149, amount = 100}, -- Energy Bomb
-					{id = 3173, amount = 100}, -- Poison Bomb
+					{id = 3192, amount = 50}, -- Fire Bomb
+					{id = 3149, amount = 50}, -- Energy Bomb
+					{id = 3173, amount = 50}, -- Poison Bomb
 					{id = 3308, amount = 1}, -- Machete
-					{id = 3148, amount = 100}, -- Destroy Field
-					{id = 3156, amount = 100}, -- Mato
+					{id = 3148, amount = 50}, -- Destroy Field
+					{id = 3156, amount = 60}, -- Mato
 					{id = 3165, amount = 100}, -- Paralyse
 					{id = 3079, amount = 1}, -- BOH
 					{id = 35563, amount = 5} -- Magic shield potion
@@ -2650,5 +2658,11 @@ ChallangeStorages = {
 	inChallenge = 10123,
 	duelWin = 10124,
 	duelLoss = 10125,
-	monsterOrigPosition = 10126
+	monsterOrigPosition = 10126,
+	inChampionship = 10127,
+	lastChampionshipMap = 10128,
+	champioshipWins = 10129,
+	champioshipLoss = 10130,
+	championshipBet = 10131
 }
+
