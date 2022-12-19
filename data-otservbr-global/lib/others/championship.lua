@@ -96,7 +96,6 @@ function joinLobby(cid, roomId)
 	local resultId = db.storeQuery("SELECT * FROM `championship_lobby` WHERE `id` = ".. roomId)
 	if resultId ~= false then
 		playerNames = result.getString(resultId, 'player_names')
-		print("teste: ".. playerNames)
 	end
 	result.free(resultId)
 
@@ -104,11 +103,29 @@ function joinLobby(cid, roomId)
 
 	db.query("UPDATE `championship_lobby` SET `player_names` = '".. playerNames .. "' WHERE `id` =" ..roomId)
 
+	local champPlayers = getLobbyPlayersByPlayerName(player:getName()):split(";")
+	for i = 1, #champPlayers do
+		local creature = Player(champPlayers[i])
+
+		if (creature:getName() ~= cid:getName()) then
+			creature:sendTextMessage(MESSAGE_STATUS_WARNING, "The player "..cid:getName().." enter in your lobby.")
+		end
+	end
+
 	return ""
 end
 
 function leaveLobby(cid)
 	local player = Player(cid)
+
+	local champPlayers = getLobbyPlayersByPlayerName(player:getName()):split(";")
+	for i = 1, #champPlayers do
+		local creature = Player(champPlayers[i])
+		if (creature:getName() ~= cid:getName()) then
+			creature:sendTextMessage(MESSAGE_STATUS_WARNING, "The player "..cid:getName().." has left from the lobby.")
+		end
+	end
+
 	local resultId = db.storeQuery("SELECT `id`, `player_names`, `created_by` FROM `championship_lobby` WHERE `player_names` LIKE '%"..player:getName().."%'")
 	if resultId ~= false then
 		repeat

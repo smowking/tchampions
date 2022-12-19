@@ -54,6 +54,8 @@ class MonsterFunctions final : LuaScriptInterface {
 				registerMethod(L, "Monster", "searchTarget", MonsterFunctions::luaMonsterSearchTarget);
 				registerMethod(L, "Monster", "setSpawnPosition", MonsterFunctions::luaMonsterSetSpawnPosition);
 				registerMethod(L, "Monster", "getRespawnType", MonsterFunctions::luaMonsterGetRespawnType);
+				registerMethod(L, "Monster", "backToSpawnPosition", MonsterFunctions::luaMonsterBackToSpawnPosition);
+				
 
 				CharmFunctions::init(L);
 				LootFunctions::init(L);
@@ -92,7 +94,7 @@ class MonsterFunctions final : LuaScriptInterface {
 
 		static int luaMonsterSelectTarget(lua_State* L);
 		static int luaMonsterSearchTarget(lua_State* L);
-
+		static int luaMonsterBackToSpawnPosition(lua_State* L);
 		static int luaMonsterSetSpawnPosition(lua_State* L);
 		static int luaMonsterGetRespawnType(lua_State* L);
 

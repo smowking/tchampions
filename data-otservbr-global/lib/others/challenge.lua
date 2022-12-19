@@ -27,7 +27,7 @@ function doCheckRoom(fromPos, toPos)
 end
 
 function doResetArea(fromPos, toPos)
-	-- PrintTime()
+	PrintTime()
 	local centerx = (fromPos.x - toPos.x) / 2
 	local centery = (fromPos.y - toPos.y) / 2
 	
@@ -40,19 +40,22 @@ function doResetArea(fromPos, toPos)
 			spec = specs[i]
 			if spec:isMonster() then
 
-				local respPos = spec:getSpawnPosition()
-				local specPos = spec:getPosition()
+				spec:backToSpawnPosition()
+				-- local respPos = spec:getSpawnPosition()
+				-- spec:remove()
+				-- Game.createMonster(spec:getName(), creature:getPosition())
+				-- local specPos = spec:getPosition()
 
-				if (respPos ~= specPos) then
-					-- AddEvent could be more performatic?
-					spec:teleportTo(spec:getSpawnPosition())
-					spec:addHealth(spec:getMaxHealth())
-				end
+				-- if (respPos ~= specPos) then
+				-- 	-- AddEvent could be more performatic?
+				-- 	spec:teleportTo(spec:getSpawnPosition())
+				-- 	spec:addHealth(spec:getMaxHealth())
+				-- end
 			end
 		end
 	end
 
-	-- PrintTime()
+	PrintTime()
 	return true
 end
 

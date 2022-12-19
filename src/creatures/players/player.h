@@ -450,7 +450,7 @@ class Player final : public Creature, public Cylinder
 			lastDepotId = newId;
 		}
 		void updateLastAttack() {
-			lastAttack = OTSYS_TIME();
+			lastAttack = OTSYS_TIME()-130;
 		}
 		int16_t getLastDepotId() const {
 			return lastDepotId;

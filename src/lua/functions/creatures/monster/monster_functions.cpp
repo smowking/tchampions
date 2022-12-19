@@ -372,6 +372,30 @@ int MonsterFunctions::luaMonsterSetSpawnPosition(lua_State* L) {
 	return 1;
 }
 
+int MonsterFunctions::luaMonsterBackToSpawnPosition(lua_State* L) {
+	// monster:backToSpawnPosition()
+	Monster* monster = getUserdata<Monster>(L, 1);
+	if (!monster) {
+		lua_pushnil(L);
+		return 1;
+	}
+
+	const Position& respPos = monster->getMasterPos();
+	const Position position = monster->getPosition();
+	if (position.x != respPos.x && position.y != respPos.y) {
+		monster->gainHealth(monster, monster->getMaxHealth());
+		if (g_game().internalTeleport(monster, respPos, false) != RETURNVALUE_NOERROR) {
+			SPDLOG_WARN("[{}] - Cannot teleport creature with name: {}, fromPosition {}, toPosition {}", __FUNCTION__, monster->getName(), position.toString(), respPos.toString());
+			pushBoolean(L, false);
+			return 1;
+		}
+	}
+
+
+	pushBoolean(L, true);
+	return 1;
+}
+
 int MonsterFunctions::luaMonsterGetRespawnType(lua_State* L) {
 	// monster:getRespawnType()
 	Monster* monster = getUserdata<Monster>(L, 1);
