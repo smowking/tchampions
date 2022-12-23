@@ -368,7 +368,6 @@ tasks.json
 
 ## CUSTOM
 # Files
-config.lua
 client_assertions.txt
 # Extensions
 *.ini

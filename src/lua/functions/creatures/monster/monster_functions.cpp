@@ -391,7 +391,6 @@ int MonsterFunctions::luaMonsterBackToSpawnPosition(lua_State* L) {
 		}
 	}
 
-
 	pushBoolean(L, true);
 	return 1;
 }
